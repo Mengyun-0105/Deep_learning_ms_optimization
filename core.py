@@ -18,10 +18,11 @@ def data_prep():
 	"""
 
 	input_data = np.genfromtxt('Input.csv', delimiter=',', skip_header=1)
-	output_data = np.transpose(np.genfromtxt(base + 'Output.csv', delimiter=',', skip_header=0))
+	output_data = np.transpose(np.genfromtxt('Output.csv', delimiter=',', skip_header=0))
 
 	mean = input_data.mean(axis = 0) # mean value for each feature
 	variance = input_data.std(axis = 0)**2 # variance for each feature
+	#TODO: Use this normalized input data to train the model
 	normalized_input = tf.nn.batch_normalization(input_data,mean,variance,None,None,1e-9,None) 
 	# normalize the input data so that all input features have the same range and same influence on the regression
 
@@ -62,13 +63,13 @@ def network(train_x, test_x, train_y, test_y,val_x,val_y,reuse_weights,alpha,epo
 
 	if (load_model_ == 'True' and os.path.isfile(os.getcwd()+'/my_model.h5')):
 
-		print ("==== Loading Model ====")
+		print("==== Loading Model ====")
 
 		model = load_model('my_model.h5')
 
 	elif (reuse_weights == 'True' and os.path.isfile(os.getcwd()+'/'+ fname)): 
 
-		print ("==== Re-using loaded weights ====")
+		print("==== Re-using loaded weights ====")
 
 		model = Sequential()
 
@@ -91,7 +92,7 @@ def network(train_x, test_x, train_y, test_y,val_x,val_y,reuse_weights,alpha,epo
 
 	else: # start from scratch
 
-		print ("==== Starting from Scratch ====")
+		print("==== Starting from Scratch ====")
 
 
 		model = Sequential()
@@ -118,8 +119,8 @@ def network(train_x, test_x, train_y, test_y,val_x,val_y,reuse_weights,alpha,epo
 
 	print("\n%s: %.2f%%" % (model.metrics_names[1], score[1]*100))
 
-	save_weights = True if raw_input("Do you want to save the weights? (y/n) ") == 'y' else False
-	save_model = True if raw_input("Do you want to save the model? (y/n) ") == 'y' else False
+	save_weights = True if input("Do you want to save the weights? (y/n) ") == 'y' else False
+	save_model = True if input("Do you want to save the model? (y/n) ") == 'y' else False
 
 	if save_weights:  # save the weights
 		model.save('my_model_weights.h5')
@@ -127,7 +128,7 @@ def network(train_x, test_x, train_y, test_y,val_x,val_y,reuse_weights,alpha,epo
 	if save_model: # save entire model
 		model.save('my_model.h5')
 
-	print  model.summary()
+	print(model.summary())
 
 	if graph == 'True':
 		gen_graphs(test_x,test_y,val_x,val_y,model)
@@ -198,4 +199,4 @@ if __name__ == '__main__':
 
 	score = network(train_x, test_x, train_y, test_y,val_x,val_y,args.reuse_weights,args.alpha,args.epochs,args.batch_size,args.neurons,args.l2_w,args.l2_b,args.fname,args.load_model_,args.optimizer,args.graph)
 	
-	print (score)
+	print(score)
